@@ -1,0 +1,13 @@
+{% block conteudo %}
+<form action="/conta" method="post">
+    {% csrf_token %}
+    <h1>Monte sua conta</h1>
+    <input type="hidden">
+    <input type="text" name="numero_conta" placeholder="Numero da Conta">
+    <input type="number" name="saldo" placeholder="Saldo">
+    <input type="text" name="agencia" placeholder="Agencia">
+    
+    <input type="submit" value="Cadastrar Conta">
+</form>
+
+{% endblock %}

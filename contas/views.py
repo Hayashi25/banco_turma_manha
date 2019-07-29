@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Pessoa
+from .models import Pessoa, Conta
 
 def mostrar_formulario_cadastro(request):
   contexto = {'msg': ''}
@@ -24,17 +24,30 @@ def login(request):
     email_formulario = request.POST.get('email')
     pessoa_banco_dados = Pessoa.objects.filter(email=email_formulario).first()
     if pessoa_banco_dados is not None:
-      return render(request, 'pessoa_filtrada.html', {'pessoa': pessoa_banco_dados})
+      argumento = {
+        'pessoa': pessoa_banco_dados
+      }
+      return render(request, 'cadastro.html', {'pessoa': pessoa_banco_dados})
     return render(request, 'login.html', {'msg': 'Ops, não encontramos'})
   
   return render(request, 'login.html', {'msg': 'ola'})
 
-# - Página Login
-# - Render da página login com campo email 
-# e o btn consultar
-# - Ao clicar no botão consultar
-# - Enviar para uma outra página com todos os dados e 
-# conta da pessoa
-# - se a pessoa não for cadastrada, retornar para página
-#  de login
-# com uma mensagem: 'Ops, não encontramos essa pessoa'
+def cadastrar_conta(request):
+  if request.method == 'post':
+    pessoa_bd = Pessoa.objects.filter(email=request.POST.get('email')).first()
+    if pessoa_bd is not None:
+      conta = Conta()
+      conta.pessoa = pessoa_bd
+      conta.numero_conta = request.POST.get('numero_conta')
+      conta.saldo = request.POST.get('saldo')
+      conta.agencia = request.POST.get('agencia')
+      conta.save()
+      argumento = {
+        'pessoa' : pessoa_bd,
+        'conta': Conta.objects.filter(pessoa=pessoa_bd).first()
+      }
+      return render(request, 'pessoa_filtrada.html', argumento)
+    else:
+      return render(request, 'index.html',{'msg':'Cadastre-se por favor, para conseguir riar sua conta'})
+  return render(request, 'cadastro.html')
+
